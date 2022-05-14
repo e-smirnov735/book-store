@@ -13,7 +13,7 @@
         public Book[] GetAllByTitle(string titlePart)
         {
             string query = titlePart.ToLower();
-            return books.Where(book => book.Title.ToLower().Contains(titlePart)).ToArray();
+            return books.Where(book => book.Title.ToLower().Contains(query)).ToArray();
         }
     }
 }
