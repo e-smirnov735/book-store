@@ -4,9 +4,9 @@
     {
         private readonly Book[] books = new[]
         {
-            new Book(1, "Art of Programming", "ISBN 12321-32131", "D. Knuth" ),
-            new Book(2, "Refactoring", "ISBN 12312-31232", "M. Fowler"),
-            new Book(3, "C Programming Language", "ISBN 12312-31232", "B. Kernigan, D.Ritchie"),
+            new Book(1, "Art of Programming", "ISBN 12321-32131", "D. Knuth", "Description1", 7.19m ),
+            new Book(2, "Refactoring", "ISBN 12312-31232", "M. Fowler", "Description2", 12.45m),
+            new Book(3, "C Programming Language", "ISBN 12312-31232", "B. Kernigan, D.Ritchie", "description3", 14.98m),
         };
 
         public Book[] GetAllByIsbn(string isbn)
@@ -20,5 +20,11 @@
                                     || book.Title.ToLower().Contains(query.ToLower()))
                         .ToArray();
         }
+
+        public Book GetById(int id)
+        {
+            return books.Single(book => book.Id == id);
+        }
+
     }
 }
