@@ -17,8 +17,8 @@
         public Book[] GetAllByTitleOrAuthor(string query)
         {
             return books.Where(book => book.Author.ToLower().Contains(query.ToLower())
-                                    || book.Title.ToLower().Contains(query.ToLower()))
-                        .ToArray();
+                                       || book.Title.ToLower().Contains(query.ToLower()))
+                                        .ToArray();
         }
 
         public Book GetById(int id)
