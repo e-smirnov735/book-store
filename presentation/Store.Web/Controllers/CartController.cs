@@ -6,24 +6,34 @@ namespace Store.Web.Controllers
     public class CartController : Controller
     {
         private readonly IBookRepository _bookRepository;
+        private readonly IOrderRepository _orderRepository;
 
-        public CartController(IBookRepository bookRepository)
+        public CartController(IBookRepository bookRepository, IOrderRepository orderRepository)
         {
-            this._bookRepository = bookRepository;
+            _bookRepository = bookRepository;
+            _orderRepository = orderRepository;
         }
 
         public IActionResult Add(int id)
         {
-            var book = _bookRepository.GetById(id);
-            if (!HttpContext.Session.TryGetCart(out var cart))
-                cart = new Cart();
-
-            if (cart.Items.ContainsKey(id))
-                cart.Items[id] += 1;
+            Order order;
+            Cart cart;
+            if (HttpContext.Session.TryGetCart(out cart))
+            {
+                order = _orderRepository.GetById(cart.OrderId);
+            }
             else
-                cart.Items[id] = 1;
+            {
+                order = _orderRepository.Create();
+                cart = new Cart(order.Id);
+            }
 
-            cart.Amount += book.Price;
+            var book = _bookRepository.GetById(id);
+            order.AddItem(book, 1);
+            _orderRepository.Update(order);
+
+            cart.TotalCount = order.TotalCount;
+            cart.TotalPrice = order.TotalPrice;
 
             HttpContext.Session.Set(cart);
 
