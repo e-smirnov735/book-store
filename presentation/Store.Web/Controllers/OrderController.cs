@@ -27,30 +27,30 @@ namespace Store.Web.Controllers
             return View("Empty");
         }
 
-        [HttpPost]
-        public IActionResult AddItem(int bookId, int count)
+
+        public IActionResult AddItem(int bookID, int count = 1)
 
         {
             (Order order, Cart cart) = GetOrCreateOrderAndCart();
 
-            var book = _bookRepository.GetById(bookId);
+            var book = _bookRepository.GetById(bookID);
 
             order.AddOrUpdateItem(book, count);
 
             SaveOrderAndCart(order, cart);
 
-            return RedirectToAction("Index", "Book", new { bookId });
+            return RedirectToAction("Index", "Book", new { id = bookID });
         }
 
         [HttpPost]
-        public IActionResult UpdateItemCount(int bookId, int count)
+        public IActionResult UpdateItem(int bookId, int count)
         {
             (Order order, Cart cart) = GetOrCreateOrderAndCart();
 
             order.GetItem(bookId).Count = count;
             SaveOrderAndCart(order, cart);
 
-            return RedirectToAction("Index", "Book", new { bookId });
+            return RedirectToAction("Index", "Book", new { id = bookId });
         }
 
         public IActionResult RemoveItem(int id)
