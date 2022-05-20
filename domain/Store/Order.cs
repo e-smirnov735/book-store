@@ -3,11 +3,10 @@
     public class Order
     {
         public int Id { get; }
-        private List<OrderItem> _items;
-        public IReadOnlyCollection<OrderItem> Items
-        {
-            get { return _items; }
-        }
+        public int TotalCount => _items.Sum(item => item.Count);
+        public decimal TotalPrice => _items.Sum(item => item.Price * item.Count);
+        private readonly List<OrderItem> _items;
+        public IReadOnlyCollection<OrderItem> Items => _items;
 
         public Order(int id, IEnumerable<OrderItem> items)
         {
@@ -18,31 +17,37 @@
             _items = new List<OrderItem>(items);
         }
 
-        public int TotalCount
+        public OrderItem GetItem(int bookId)
         {
-            get { return _items.Sum(item => item.Count); }
+            int index = _items.FindIndex(item => item.BookId == bookId);
+
+            if (index == -1)
+                throw new InvalidOperationException("Book not found");
+
+            return _items[index];
         }
 
-        public decimal TotalPrice
-        {
-            get { return _items.Sum(item => item.Price * item.Count); }
-        }
-
-        public void AddItem(Book book, int count)
+        public void AddOrUpdateItem(Book book, int count)
         {
             if (book == null)
                 throw new ArgumentNullException(nameof(book));
 
-            var item = _items.SingleOrDefault(item => item.BookId == book.Id);
-            if (item == null)
-            {
+            int index = _items.FindIndex(item => item.BookId == book.Id);
+
+            if (index == -1)
                 _items.Add(new OrderItem(book.Id, count, book.Price));
-            }
             else
-            {
-                _items.Remove(item);
-                _items.Add(new OrderItem(book.Id, item.Count + count, item.Price));
-            }
+                _items[index].Count += count;
+        }
+
+        public void RemoveItem(int bookId)
+        {
+            int index = _items.FindIndex(item => item.BookId == bookId);
+
+            if (index == -1)
+                throw new InvalidOperationException("Order does not contains this book");
+
+            _items.RemoveAt(index);
         }
     }
 }
